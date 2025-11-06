@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anime Character Finder</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f8ff;
+      text-align: center;
+      padding: 50px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    input {
+      padding: 10px;
+      width: 70%;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+
+    #result img {
+      margin-top: 20px;
+      max-width: 300px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Anime Character Finder</h1>
+    <input type="text" id="characterInput" placeholder="Enter character name..." />
+    <button onclick="findCharacter()">Search</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function findCharacter() {
+      const name = document.getElementById('characterInput').value;
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = 'Searching...';
+
+      try {
+        const response = await fetch(`https://api.jikan.moe/v4/characters?q=${name}&limit=1`);
+        const data = await response.json();
+
+        if (data.data.length > 0) {
+          const character = data.data[0];
+          resultDiv.innerHTML = `
+            <h2>${character.name}</h2>
+            <img src="${character.images.jpg.image_url}" alt="${character.name}" />
+            <p>${character.about ? character.about.substring(0, 200) + '...' : 'No description available.'}</p>
+          `;
+        } else {
+          resultDiv.innerHTML = 'Character not found.';
+        }
+      } catch (error) {
+        resultDiv.innerHTML = 'Error fetching data.';
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
